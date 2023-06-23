@@ -69,7 +69,7 @@ const fsCommands = {
     }
     this.printCurrent()
   },
-  cp: async function(paths) {
+  cp: async function(paths, moving = false) {
     const from = path.resolve(this.curDir, paths[0])
     const to = path.resolve(this.curDir, paths[1])
     try {
@@ -85,13 +85,11 @@ const fsCommands = {
       fs.mkdir(to)
     }
     await fs.writeFile(path.join(to, path.basename(from)), '')
-    // const source = await fs.open(path.resolve(this.curDir, paths[0]))
-    const source = path.resolve(this.curDir, paths[0])
-    const readStream = createReadStream(source)
-    // const destination = await fs.open(path.join(to, path.basename(from)))
+    const readStream = createReadStream(from)
     const destination = path.join(to, path.basename(from))
     const writeStream = createWriteStream(destination)
     readStream.pipe(writeStream)
+    moving && await fs.rm(from)
     readStream.on('end', () => this.printCurrent())
   }
 }
