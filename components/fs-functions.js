@@ -56,7 +56,15 @@ const fsCommands = {
       await fs.readFile(path.resolve(this.curDir, filename), { encoding: 'utf-8'})
       console.log('FS operation failed')
     } catch {
-      fs.writeFile(path.resolve(this.curDir, filename), '')
+      await fs.writeFile(path.resolve(this.curDir, filename), '')
+    }
+    this.printCurrent()
+  },
+  rn: async function(paths) {
+    try {
+      await fs.rename(path.resolve(this.curDir, paths[0]), path.resolve(this.curDir, paths[1]))
+    } catch {
+      console.log('FS operation failed')
     }
     this.printCurrent()
   }
