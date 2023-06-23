@@ -50,6 +50,15 @@ const fsCommands = {
       console.log('Operation failed')
       this.printCurrent()
     }
+  },
+  add: async function(filename) {
+    try {
+      await fs.readFile(path.resolve(this.curDir, filename), { encoding: 'utf-8'})
+      console.log('FS operation failed')
+    } catch {
+      fs.writeFile(path.resolve(this.curDir, filename), '')
+    }
+    this.printCurrent()
   }
 }
 export default fsCommands

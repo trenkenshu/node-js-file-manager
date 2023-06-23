@@ -34,6 +34,9 @@ export const processEntry = (chunk) => {
     case 'cat':
       fsCommands.cat(commandAndArgs[1])
     break
+    case 'add':
+      fsCommands.add(commandAndArgs[1])
+    break
     default:
       console.log('def Operation failed')
   }
