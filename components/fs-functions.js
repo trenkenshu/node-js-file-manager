@@ -35,10 +35,20 @@ const fsCommands = {
     const content = await fs.readdir(this.curDir, { withFileTypes: true })
     console.table(content.map((item, index) => {
       return {
-        index,
         name: item.name,
         type: item.isDirectory() ? 'dir' : 'file'}
     }))
+  },
+  cat: async function(pathToFile) {
+    try {
+      const fd = await fs.open(path.resolve(this.curDir, pathToFile));
+      const readStream = fd.createReadStream()
+      readStream.pipe(process.stdout)
+      readStream.on('end', () => this.printCurrent())
+    } catch {
+      console.log('Operation failed')
+      this.printCurrent()
+    }
   }
 }
 export default fsCommands

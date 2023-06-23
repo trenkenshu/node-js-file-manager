@@ -9,13 +9,16 @@ export const validateUsername = (str) => {
   return ''
 }
 export const exit = (name) => {
-  process.stdout.write(`\nThank you for using File Manager, ${name}, goodbye!/n`)
+  process.stdout.write(`\nThank you for using File Manager, ${name}, goodbye!\n`)
   process.exit(1)
 }
 export const processEntry = (chunk) => {
   const data = String(chunk).trim()
   const commandAndArgs = data.split(' ');
   switch (commandAndArgs[0]) {
+    case '':
+      console.log('Empty input\n')
+    break
     case '.exit':
       exit(username)
     break
@@ -27,6 +30,9 @@ export const processEntry = (chunk) => {
     break
     case 'ls':
         fsCommands.ls()
+    break
+    case 'cat':
+      fsCommands.cat(commandAndArgs[1])
     break
     default:
       console.log('def Operation failed')
