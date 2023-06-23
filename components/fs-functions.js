@@ -28,7 +28,9 @@ const fsCommands = {
       return
     }
     if(path.isAbsolute(newPath)) {
-      process.platform === 'win32' && process.argv[1].split(path.sep)[0] + path.sep
+      if(process.platform === 'win32') {
+        this.root = newPath.split(path.sep)[0] + path.sep
+      }
       this.curDir = newPath
     } else {
       this.curDir = path.resolve(this.curDir, newPath)
