@@ -54,6 +54,9 @@ export const processEntry = (chunk) => {
       osFunctions(commandAndArgs[1])
       fsCommands.printCurrent()
     break
+    case 'hash':
+      fsCommands.hash(commandAndArgs[1])
+    break
     default:
       console.log('def Operation failed')
       fsCommands.printCurrent()

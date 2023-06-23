@@ -1,5 +1,6 @@
 import path from 'node:path'
 import fs from 'node:fs/promises'
+import { createHash } from 'crypto'
 import { createReadStream, createWriteStream } from 'node:fs'
 const fsCommands = {
   root:  process.platform === 'win32' ? process.argv[1].split(path.sep)[0] + path.sep : path.sep,
@@ -100,6 +101,16 @@ const fsCommands = {
     } catch {
       console.log('FS operation failed')
     }
+    this.printCurrent()
+  },
+  hash: async function(pathToFile) {
+    let content = '';
+    try {
+        content = await fs.readFile(path.resolve(this.curDir, pathToFile))
+    } catch {
+        throw Error('FS operation failed')
+    }
+    console.log(createHash('sha256').update(content).digest('hex'))
     this.printCurrent()
   }
 }
