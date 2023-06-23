@@ -46,6 +46,9 @@ export const processEntry = (chunk) => {
     case 'mv':
       fsCommands.cp(commandAndArgs.slice(1), true)
     break
+    case 'rm':
+      fsCommands.rm(commandAndArgs[1])
+    break
     default:
       console.log('def Operation failed')
   }

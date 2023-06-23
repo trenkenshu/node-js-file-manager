@@ -91,6 +91,14 @@ const fsCommands = {
     readStream.pipe(writeStream)
     moving && await fs.rm(from)
     readStream.on('end', () => this.printCurrent())
+  },
+  rm: async function(deletePath) {
+    try {
+      await fs.rm(path.resolve(this.curDir, deletePath))
+    } catch {
+      console.log('FS operation failed')
+    }
+    this.printCurrent()
   }
 }
 export default fsCommands
