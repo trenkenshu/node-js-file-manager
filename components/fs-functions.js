@@ -82,15 +82,17 @@ const fsCommands = {
     try {
       await fs.readdir(to)
     } catch {
-      fs.mkdir(to)
+      fs.mkdir(to, { recursive: true })
     }
     await fs.writeFile(path.join(to, path.basename(from)), '')
     const readStream = createReadStream(from)
     const destination = path.join(to, path.basename(from))
     const writeStream = createWriteStream(destination)
     readStream.pipe(writeStream)
-    moving && await fs.rm(from)
-    readStream.on('end', () => this.printCurrent())
+    readStream.on('end', async () => {
+      moving && await fs.rm(from)
+      this.printCurrent()
+    })
   },
   rm: async function(deletePath) {
     try {

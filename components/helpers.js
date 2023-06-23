@@ -1,4 +1,5 @@
 import fsCommands from "./fs-functions.js"
+import osFunctions from "./os-functions.js";
 
 let username = ''
 export const validateUsername = (str) => {
@@ -49,7 +50,12 @@ export const processEntry = (chunk) => {
     case 'rm':
       fsCommands.rm(commandAndArgs[1])
     break
+    case 'os':
+      osFunctions(commandAndArgs[1])
+      fsCommands.printCurrent()
+    break
     default:
       console.log('def Operation failed')
+      fsCommands.printCurrent()
   }
 }
