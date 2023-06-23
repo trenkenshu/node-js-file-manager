@@ -75,7 +75,7 @@ const fsCommands = {
     this.printCurrent()
   },
   cp: async function(paths, moving = false) {
-    if(!(await this.check(paths))) {
+    if(!(await this.check(paths)) ) {
       return
     }
     const from = path.resolve(this.curDir, paths[0])
@@ -152,7 +152,13 @@ const fsCommands = {
     try {
       await fs.readdir(to)
     } catch {
-      await fs.mkdir(to, { recursive: true })
+      try {
+        await fs.mkdir(to, { recursive: true })
+      } catch {
+        console.log('FS operation failed')
+        this.printCurrent()
+        return false
+      }
     }
     return true
   }
