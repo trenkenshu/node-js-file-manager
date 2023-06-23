@@ -10,5 +10,4 @@ username
 fsCommands.printCurrent();
 
 process.stdin.on('data', processEntry)
-
 process.on('SIGINT', () => exit(username))
