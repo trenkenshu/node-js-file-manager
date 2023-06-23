@@ -1,5 +1,6 @@
 import path from 'node:path'
 import fs from 'node:fs/promises'
+import { createReadStream, createWriteStream } from 'node:fs'
 const fsCommands = {
   root:  process.platform === 'win32' ? process.argv[1].split(path.sep)[0] + path.sep : path.sep,
   curDir: path.dirname(process.argv[1]),
@@ -67,6 +68,31 @@ const fsCommands = {
       console.log('FS operation failed')
     }
     this.printCurrent()
+  },
+  cp: async function(paths) {
+    const from = path.resolve(this.curDir, paths[0])
+    const to = path.resolve(this.curDir, paths[1])
+    try {
+      await fs.readFile(from, { encoding: 'utf-8'})
+    } catch {
+      console.log('FS operation failed')
+      this.printCurrent()
+      return
+    }
+    try {
+      await fs.readdir(to)
+    } catch {
+      fs.mkdir(to)
+    }
+    await fs.writeFile(path.join(to, path.basename(from)), '')
+    // const source = await fs.open(path.resolve(this.curDir, paths[0]))
+    const source = path.resolve(this.curDir, paths[0])
+    const readStream = createReadStream(source)
+    // const destination = await fs.open(path.join(to, path.basename(from)))
+    const destination = path.join(to, path.basename(from))
+    const writeStream = createWriteStream(destination)
+    readStream.pipe(writeStream)
+    readStream.on('end', () => this.printCurrent())
   }
 }
 export default fsCommands
