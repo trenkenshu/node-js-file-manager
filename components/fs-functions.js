@@ -25,6 +25,7 @@ const fsCommands = {
       return
     }
     if(path.isAbsolute(newPath)) {
+      process.platform === 'win32' && process.argv[1].split(path.sep)[0] + path.sep
       this.curDir = newPath
     } else {
       this.curDir = path.resolve(this.curDir, newPath)
@@ -44,7 +45,7 @@ const fsCommands = {
       const fd = await fs.open(path.resolve(this.curDir, pathToFile));
       const readStream = fd.createReadStream()
       readStream.pipe(process.stdout)
-      readStream.on('end', () => this.printCurrent())
+      readStream.once('end', () => this.printCurrent())
     } catch {
       console.log('Operation failed')
       this.printCurrent()
