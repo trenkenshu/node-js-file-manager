@@ -1,5 +1,6 @@
 import path from 'node:path'
 import fs from 'node:fs/promises'
+import zlib from 'node:zlib'
 import { createHash } from 'crypto'
 import { createReadStream, createWriteStream } from 'node:fs'
 const fsCommands = {
@@ -41,6 +42,7 @@ const fsCommands = {
         name: item.name,
         type: item.isDirectory() ? 'dir' : 'file'}
     }))
+    this.printCurrent()
   },
   cat: async function(pathToFile) {
     try {
@@ -71,20 +73,11 @@ const fsCommands = {
     this.printCurrent()
   },
   cp: async function(paths, moving = false) {
-    const from = path.resolve(this.curDir, paths[0])
-    const to = path.resolve(this.curDir, paths[1])
-    try {
-      await fs.readFile(from, { encoding: 'utf-8'})
-    } catch {
-      console.log('FS operation failed')
-      this.printCurrent()
+    if(!(await this.check(paths))) {
       return
     }
-    try {
-      await fs.readdir(to)
-    } catch {
-      fs.mkdir(to, { recursive: true })
-    }
+    const from = path.resolve(this.curDir, paths[0])
+    const to = path.resolve(this.curDir, paths[1])
     await fs.writeFile(path.join(to, path.basename(from)), '')
     const readStream = createReadStream(from)
     const destination = path.join(to, path.basename(from))
@@ -112,6 +105,54 @@ const fsCommands = {
     }
     console.log(createHash('sha256').update(content).digest('hex'))
     this.printCurrent()
+  },
+  compressDecompress: async function(params, operation = 'compress') {
+    if(!(await this.check(params))) {
+      return
+    }
+    const from = path.resolve(this.curDir, params[0])
+    const to = path.resolve(this.curDir, params[1] ? params[1] : '.')
+    let destination = ''
+    let arc = '';
+    switch (operation){
+      case 'compress':
+        destination = path.join(to, path.basename(from) + '.br')
+        arc = zlib.createBrotliCompress()
+      break
+      case 'decompress':
+        destination = path.join(to, path.basename(from).slice(0, -3))
+        arc = zlib.createBrotliDecompress()
+      break
+      default:
+        console.log('Wat compression?')
+        this.printCurrent()
+        return
+    }
+    const readStream = createReadStream(from)
+    const writeStream = createWriteStream(destination)
+    readStream
+      .pipe(arc)
+      .pipe(writeStream)
+    writeStream.on('finish', () => this.printCurrent())
+  },
+  check: async function(params) {
+    let from = '';
+    let to = '';
+    try {
+      from = path.resolve(this.curDir, params[0])
+      to = path.resolve(this.curDir, params[1])
+      await fs.readFile(from, { encoding: 'utf-8'})
+    } catch {
+      console.log('FS operation failed')
+      this.printCurrent()
+      return false
+    }
+    try {
+      await fs.readdir(to)
+    } catch {
+      await fs.mkdir(to, { recursive: true })
+    }
+    return true
   }
 }
 export default fsCommands

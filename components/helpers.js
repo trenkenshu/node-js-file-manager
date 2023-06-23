@@ -57,6 +57,12 @@ export const processEntry = (chunk) => {
     case 'hash':
       fsCommands.hash(commandAndArgs[1])
     break
+    case 'compress':
+      fsCommands.compressDecompress(commandAndArgs.slice(1), 'compress')
+    break
+    case 'decompress':
+      fsCommands.compressDecompress(commandAndArgs.slice(1), 'decompress')
+    break
     default:
       console.log('def Operation failed')
       fsCommands.printCurrent()
